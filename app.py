@@ -33,8 +33,9 @@ API_SECRET = os.getenv("API_SECRET")
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 ACCESS_SECRET = os.getenv("ACCESS_SECRET")
 BEARER_TOKEN = os.getenv("BEARER_TOKEN")
+MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017')
 
-mongo_client = MongoClient(os.getenv("MONGO_URI"))
+mongo_client = MongoClient(MONGO_URI)
 db = mongo_client['twitter_db']
 tweets_zico_collection = db['tweets_zico']
 posted_tweets_zico_collection = db['posted_tweets_zico']
