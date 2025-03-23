@@ -110,23 +110,23 @@ async def post_tweet(client):
               last_tweet_id = tweet_id
               print(f'Tweet part posted successfully (attempt {attempt})')
               post_success = True
+              human_delay = random.uniform(5, 8)
+              print(f"Waiting {human_delay:.2f} seconds before next post...")
+              await asyncio.sleep(human_delay)
             else:
               print(f"Tweet post attempt {attempt} failed: No valid tweet ID returned")
               if attempt < max_attempts:
                 print(f"Waiting 10 seconds before retry...")
                 await asyncio.sleep(10)
+                
           except Exception as e:
             print(f"Error posting tweet (attempt {attempt}): {str(e)}")
             if attempt < max_attempts:
-                print(f"Waiting 10 seconds before retry...")
-                await asyncio.sleep(10)
+              print(f"Waiting 10 seconds before retry...")
+              await asyncio.sleep(10)
                 
       if not post_success:
         raise Exception(f"Failed to post tweet part after {max_attempts} attempts")
-                
-      human_delay = random.uniform(5, 8)
-      print(f"Waiting {human_delay:.2f} seconds before next post...")
-      await asyncio.sleep(human_delay)
             
       tweets_zico_collection.update_one(
         {'_id': tweet_data['tweet_id']},
@@ -159,7 +159,6 @@ async def main():
     
     try:
       """Configures the scheduling of posts."""
-      await job()
       schedule.every().hour.at(":30").do(lambda: should_run_task(6) and asyncio.create_task(job()))
       schedule.every().hour.at(":30").do(lambda: should_run_task(12) and asyncio.create_task(job()))
     
