@@ -142,7 +142,7 @@ async def job():
   if client:
     await post_tweet(client)
     
-async def should_run_task(scheduled_utc_hour: int) -> bool:
+def should_run_task(scheduled_utc_hour: int) -> bool:
     """
     Verify if the task should run based on the scheduled UTC hour
     """
