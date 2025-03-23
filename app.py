@@ -5,6 +5,7 @@ import schedule
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import asyncio
+import aiohttp
 import random
 import signal
 from dotenv import load_dotenv
@@ -46,16 +47,18 @@ posted_tweets_zico_collection = db['posted_tweets_zico']
 async def auth_v2():
   """Authenticates with the Twitter API v2."""
   try:
-    client = AsyncClient(
-      bearer_token=BEARER_TOKEN,
-      consumer_key=API_KEY,
-      consumer_secret=API_SECRET,
-      access_token=ACCESS_TOKEN,
-      access_token_secret=ACCESS_SECRET,
-      wait_on_rate_limit=True
-    )
-    logger.info("Authentication successful!")
-    return client
+    async with aiohttp.ClientSession() as session:
+      client = AsyncClient(
+        bearer_token=BEARER_TOKEN,
+        consumer_key=API_KEY,
+        consumer_secret=API_SECRET,
+        access_token=ACCESS_TOKEN,
+        access_token_secret=ACCESS_SECRET,
+        wait_on_rate_limit=True,
+        session=session
+      )
+      logger.info("Authentication successful!")
+      return client
   except Exception as e:
     logger.error(f"Error during authentication: {str(e)}")
     return None
