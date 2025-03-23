@@ -7,6 +7,7 @@ from logging.handlers import TimedRotatingFileHandler
 import asyncio
 import random
 import signal
+from dotenv import load_dotenv
 
 from tweepy.asynchronous import AsyncClient
 from pymongo import MongoClient
@@ -27,6 +28,8 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger("TwitterBot")
+
+load_dotenv()
 
 API_KEY = os.getenv("API_KEY")
 API_SECRET = os.getenv("API_SECRET")
