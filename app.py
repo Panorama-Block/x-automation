@@ -103,7 +103,7 @@ async def post_tweet(client):
           attempt += 1
           try:
             print(f"Posting tweet part (attempt {attempt}/{max_attempts})...")
-            new_tweet = await client.create_tweet(part, in_reply_to_tweet_id=last_tweet_id)
+            new_tweet = await client.create_tweet(text=part, in_reply_to_tweet_id=last_tweet_id)
             tweet_id = new_tweet.data['id']
             
             if new_tweet and tweet_id:
