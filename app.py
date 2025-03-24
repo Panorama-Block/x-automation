@@ -139,10 +139,10 @@ async def post_tweet(client):
 
 async def job():
   """Job function that will be executed periodically."""
-  client = await auth_v2()
-  if client:
-    await post_tweet(client)
-    await client.close_connection()
+  async with aiohttp.ClientSession() as session:
+    client = await auth_v2()
+    if client:
+      await post_tweet(client)
     
 def should_run_task(scheduled_utc_hour: int) -> bool:
     """
@@ -161,7 +161,6 @@ async def main():
     
     try:
       """Configures the scheduling of posts."""
-      await job()
       schedule.every().hour.at(":30").do(lambda: should_run_task(6) and asyncio.create_task(job()))
       schedule.every().hour.at(":30").do(lambda: should_run_task(12) and asyncio.create_task(job()))
     
