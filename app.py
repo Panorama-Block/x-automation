@@ -161,6 +161,7 @@ async def main():
     
     try:
       """Configures the scheduling of posts."""
+      await job()
       schedule.every().hour.at(":30").do(lambda: should_run_task(6) and asyncio.create_task(job()))
       schedule.every().hour.at(":30").do(lambda: should_run_task(12) and asyncio.create_task(job()))
     
