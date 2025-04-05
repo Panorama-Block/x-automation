@@ -151,8 +151,7 @@ async def job():
         try:
             await post_tweet(client)
         finally:
-            await client.close()
-
+            await client.aclose()
 
 async def main():
     def signal_handler(sig, frame):
