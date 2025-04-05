@@ -1,11 +1,9 @@
 import os
 import sys
 from datetime import datetime
-import schedule
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import asyncio
-import aiohttp
 import random
 import signal
 from dotenv import load_dotenv
@@ -41,7 +39,6 @@ db = mongo_client["twitter_db"]
 tweets_zico_collection = db["tweets_zico"]
 posted_tweets_zico_collection = db["posted_tweets_zico"]
 
-
 async def get_new_tweet():
     """Get a tweet from the database."""
     try:
@@ -70,7 +67,6 @@ async def get_new_tweet():
     except Exception as e:
         logging.error(f"Error in get_new_tweet: {str(e)}")
         return None
-
 
 async def post_tweet(client):
     """Post a tweet using the API v2."""
@@ -130,7 +126,6 @@ async def post_tweet(client):
     except Exception as e:
         print(f"Error in tweet job: {str(e)}")
 
-
 async def auth_v2():
     """Authenticates with the Twitter API v2."""
     try:
@@ -140,8 +135,7 @@ async def auth_v2():
             consumer_secret=API_SECRET,
             access_token=ACCESS_TOKEN,
             access_token_secret=ACCESS_SECRET,
-            wait_on_rate_limit=True,
-            wait_on_rate_limit_notify=True
+            wait_on_rate_limit=True
         )
         logger.info("Authentication successful!")
         return client
