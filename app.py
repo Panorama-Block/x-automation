@@ -141,6 +141,7 @@ async def auth_v2():
             access_token=ACCESS_TOKEN,
             access_token_secret=ACCESS_SECRET,
             wait_on_rate_limit=True,
+            wait_on_rate_limit_notify=True
         )
         logger.info("Authentication successful!")
         return client
