@@ -138,12 +138,11 @@ async def post_tweet(client):
     print(f"Error in tweet job: {str(e)}")
 
 async def job():
-  """Job function that will be executed periodically."""
-  async with aiohttp.ClientSession() as session:
+    """Job function that will be executed periodically."""
     client = await auth_v2()
     if client:
       await post_tweet(client)
-    
+
 def should_run_task(scheduled_utc_hour: int) -> bool:
     """
     Verify if the task should run based on the scheduled UTC hour
@@ -160,17 +159,16 @@ async def main():
     signal.signal(signal.SIGTERM, signal_handler)
     
     try:
-      """Configures the scheduling of posts."""
-      schedule.every().hour.at(":30").do(lambda: should_run_task(6) and asyncio.create_task(job()))
-      schedule.every().hour.at(":30").do(lambda: should_run_task(12) and asyncio.create_task(job()))
-    
-      while True:
-        try:
-            schedule.run_pending()
-            await asyncio.sleep(60)
-        except Exception as e:
-            logging.error(f"Error in main loop: {str(e)}")
-            await asyncio.sleep(60)
+        utc_now = datetime.now(pytz.UTC)
+        current_hour = utc_now.hour
+        
+        if current_hour in [6, 12]:
+            await job()
+            print(f"Job executed successfully at UTC {current_hour}:00")
+        else:
+            print(f"Not the right time to run. Current UTC hour: {current_hour}")
+            print("This script should run at UTC 6:00 or 12:00")
+            
     except Exception as e:
         logging.error(f"Fatal error in main: {str(e)}")
 
