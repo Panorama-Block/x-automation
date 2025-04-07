@@ -155,24 +155,9 @@ async def job():
             raise
 
 async def main():
-    def signal_handler(sig, frame):
-        print("Exiting gracefully...")
-        sys.exit(0)
-
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
-
     try:
-        utc_now = datetime.now(pytz.UTC)
-        current_hour = utc_now.hour
-
-        if current_hour in [6, 12]:
-            await job()
-            print(f"Job executed successfully at UTC {current_hour}:00")
-        else:
-            print(f"Not the right time to run. Current UTC hour: {current_hour}")
-            print("This script should run at UTC 6:00 or 12:00")
-
+        await job()
+        print("Job executed successfully")
     except Exception as e:
         logging.error(f"Fatal error in main: {str(e)}")
 
