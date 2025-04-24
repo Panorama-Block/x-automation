@@ -9,7 +9,7 @@ import signal
 from dotenv import load_dotenv
 
 from tweepy.asynchronous import AsyncClient
-from tweepy import OAuth1UserHandler
+from tweepy import OAuth1UserHandler, API
 from pymongo import MongoClient
 from gridfs import GridFS
 from bson.objectid import ObjectId
@@ -48,7 +48,7 @@ def get_image_from_gridfs(image_id: str) -> bytes:
     """
     try:
         fs = GridFS(db)
-        # Converter string ID para ObjectId
+        # Convert string ID to ObjectId
         object_id = ObjectId(image_id)
         
         if not fs.exists(object_id):
@@ -203,7 +203,7 @@ def auth_v1():
             ACCESS_TOKEN,
             ACCESS_SECRET,
         )
-        return OAuth1UserHandler(API_KEY, API_SECRET)
+        return API(auth)
     except Exception as e:
         logger.error(f"Error during authentication: {str(e)}")
         return None
