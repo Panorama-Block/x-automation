@@ -1,11 +1,8 @@
 import os
-import sys
-from datetime import datetime
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import asyncio
 import random
-import signal
 from dotenv import load_dotenv
 
 from tweepy.asynchronous import AsyncClient
@@ -13,7 +10,6 @@ from tweepy import OAuth1UserHandler, API
 from pymongo import MongoClient
 from gridfs import GridFS
 from bson.objectid import ObjectId
-import pytz
 
 logging.basicConfig(
     level=logging.INFO,
@@ -39,8 +35,8 @@ MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 
 mongo_client = MongoClient(MONGO_URI)
 db = mongo_client["twitter_db"]
-tweets_zico_collection = db["tweets_zico"]
-posted_tweets_zico_collection = db["posted_tweets_zico"]
+tweets_collection = db[os.getenv("tweets_collection")]
+posted_tweets_collection = db[os.getenv("posted_tweets_collection")]
 
 def get_image_from_gridfs(image_id: str) -> bytes:
     """
@@ -101,23 +97,23 @@ async def prepare_post_image(image_id):
 async def get_new_tweet():
     """Get a tweet from the database."""
     try:
-        tweet_data = tweets_zico_collection.find_one(
+        tweet_data = tweets_collection.find_one(
             {"posted": False}, sort=[("created_at_datetime", -1)]
         )
 
         if not tweet_data:
-            print("No unposted tweets found in tweets_zico_collection")
+            print("No unposted tweets found in tweets_collection")
             return None
 
         for part in tweet_data.get("parts", []):
-            existing_posted_tweet = posted_tweets_zico_collection.find_one(
+            existing_posted_tweet = posted_tweets_collection.find_one(
                 {"text": part}
             )
             if existing_posted_tweet:
                 print(
-                    f'Part "{part[:30]}..." already exists in posted_tweets_zico_collection. Skipping tweet...'
+                    f'Part "{part[:30]}..." already exists in posted_tweets_collection. Skipping tweet...'
                 )
-                tweets_zico_collection.update_one(
+                tweets_collection.update_one(
                     {"_id": tweet_data["_id"]}, {"$set": {"posted": True}}
                 )
                 return None
@@ -187,7 +183,7 @@ async def post_tweet(client):
                     f"Failed to post tweet part after {max_attempts} attempts"
                 )
 
-            tweets_zico_collection.update_one(
+            tweets_collection.update_one(
                 {"_id": tweet_data["tweet_id"]}, {"$set": {"posted": True}}
             )
 
