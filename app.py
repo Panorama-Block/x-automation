@@ -60,8 +60,8 @@ async def prepare_post_image(image_id):
     """
     Prepare image for posting by retrieving from GridFS and uploading to Twitter.
     """
+    temp_image_path = None
     try:
-        temp_image_path = None
         media_id = None
         
         if image_id:
@@ -134,10 +134,10 @@ async def post_tweet(client):
             if "image_id" in tweet_data:
                 media_id = await prepare_post_image(tweet_data["image_id"])
             
+            post_success = False
+            max_attempts = 3
             for part in tweet_data["parts"]:
-                max_attempts = 3
                 attempt = 0
-                post_success = False
 
                 while attempt < max_attempts and not post_success:
                     attempt += 1
