@@ -134,10 +134,10 @@ async def post_tweet(client):
             if "image_id" in tweet_data:
                 media_id = await prepare_post_image(tweet_data["image_id"])
             
-            post_success = False
-            max_attempts = 3
             for part in tweet_data["parts"]:
                 attempt = 0
+                post_success = False
+                max_attempts = 3
 
                 while attempt < max_attempts and not post_success:
                     attempt += 1
@@ -178,10 +178,10 @@ async def post_tweet(client):
                             print(f"Waiting 10 seconds before retry...")
                             await asyncio.sleep(10)
 
-            if not post_success:
-                raise Exception(
-                    f"Failed to post tweet part after {max_attempts} attempts"
-                )
+                if not post_success:
+                    raise Exception(
+                        f"Failed to post tweet part after {max_attempts} attempts"
+                    )
 
             tweets_collection.update_one(
                 {"_id": tweet_data["tweet_id"]}, {"$set": {"posted": True}}
